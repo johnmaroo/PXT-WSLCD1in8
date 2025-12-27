@@ -592,100 +592,6 @@ namespace Graphics {
         return control.millis() - frameStartTime
     }
 
-    /**
-     * Draw a sprite (small image) from a buffer
-     * Buffer format: width, height, then pixel data (RGB565 high/low bytes)
-     */
-    //% blockId=gfx_draw_sprite
-    //% block="draw sprite %data at x %x y %y"
-    //% group="Animation"
-    //% weight=23
-    //% advanced=true
-    export function drawSprite(data: Buffer, x: number, y: number): void {
-        if (data.length < 2) return
-
-        const w = data[0]
-        const h = data[1]
-        const pixelStart = 2
-
-        for (let py = 0; py < h; py++) {
-            for (let px = 0; px < w; px++) {
-                const idx = pixelStart + (py * w + px) * 2
-                if (idx + 1 >= data.length) return
-
-                const color = (data[idx] << 8) | data[idx + 1]
-                // Skip transparent (magenta 0xF81F)
-                if (color !== 0xF81F) {
-                    const screenX = x + px
-                    const screenY = y + py
-                    if (screenX >= 0 && screenX < LCD_WIDTH && screenY >= 0 && screenY < LCD_HEIGHT) {
-                        const addr = SRAM.getPixelAddr(screenX, screenY)
-                        SRAM.writeColor(addr, color)
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Create a solid color sprite buffer
-     */
-    //% blockId=gfx_create_sprite
-    //% block="create sprite width %w height %h color %color"
-    //% w.min=1 w.max=32 h.min=1 h.max=32
-    //% color.shadow=gfx_color_picker
-    //% group="Animation"
-    //% weight=22
-    //% advanced=true
-    export function createSprite(w: number, h: number, color: number): Buffer {
-        const size = 2 + w * h * 2
-        const buf = Buffer.create(size)
-        buf[0] = w
-        buf[1] = h
-
-        const highByte = (color >> 8) & 0xFF
-        const lowByte = color & 0xFF
-
-        for (let i = 0; i < w * h; i++) {
-            buf[2 + i * 2] = highByte
-            buf[2 + i * 2 + 1] = lowByte
-        }
-
-        return buf
-    }
-
-    /**
-     * Scroll the entire screen in a direction
-     */
-    //% blockId=gfx_scroll
-    //% block="scroll screen %dir by %pixels pixels fill %fillColor"
-    //% pixels.min=1 pixels.max=128
-    //% fillColor.shadow=gfx_color_picker
-    //% group="Animation"
-    //% weight=21
-    export function scroll(dir: ScrollDirection, pixels: number, fillColor: number): void {
-        // This is a software scroll - reads from SRAM and rewrites shifted
-        // For simplicity, we just clear and let user redraw
-        // A full implementation would copy SRAM regions
-
-        if (dir === ScrollDirection.UP) {
-            // Shift everything up, fill bottom
-            for (let y = 0; y < LCD_HEIGHT - pixels; y++) {
-                for (let x = 0; x < LCD_WIDTH; x++) {
-                    const srcAddr = SRAM.getPixelAddr(x, y + pixels)
-                    const dstAddr = SRAM.getPixelAddr(x, y)
-                    // Read and write (inefficient but works)
-                    const highByte = SRAM.readByte(srcAddr)
-                    const lowByte = SRAM.readByte(srcAddr + 1)
-                    SRAM.writeByte(dstAddr, highByte)
-                    SRAM.writeByte(dstAddr + 1, lowByte)
-                }
-            }
-            // Fill bottom
-            SRAM.fillRect(0, LCD_HEIGHT - pixels, LCD_WIDTH, pixels, fillColor)
-        }
-        // Add other directions as needed
-    }
 
     /**
      * Fast fill a region (optimized for speed)
@@ -700,19 +606,5 @@ namespace Graphics {
     export function fastFill(x: number, y: number, w: number, h: number, color: number): void {
         SRAM.fillRect(x, y, w, h, color)
     }
-}
-
-/**
- * Scroll direction for screen scrolling
- */
-enum ScrollDirection {
-    //% block="up"
-    UP = 0,
-    //% block="down"
-    DOWN = 1,
-    //% block="left"
-    LEFT = 2,
-    //% block="right"
-    RIGHT = 3
 }
 

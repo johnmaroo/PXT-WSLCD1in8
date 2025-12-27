@@ -1,54 +1,44 @@
 /**
- * Animation Demo for Waveshare 1.8" LCD
- * Tests performance and animation features
+ * Simple Animation Test for Waveshare 1.8" LCD
  */
 
 // Initialize
 Graphics.init()
 Graphics.setBacklight(100)
-Graphics.setTargetFPS(30)
-
-// Variables for animation
-let ballX = 80
-let ballY = 64
-let ballVX = 3
-let ballVY = 2
-let ballRadius = 10
 
 // Clear to black
 Graphics.clear(Color.BLACK)
 Graphics.displayFull()
 
-// Animation loop
+// Animation variables
+let x = 80
+let y = 64
+let dx = 2
+let dy = 1
+
+// Simple animation loop
 basic.forever(function () {
-    Graphics.beginFrame()
+    // Erase old position
+    Graphics.fillRect(x - 12, y - 12, 24, 24, Color.BLACK)
 
-    // Clear previous ball position (draw black circle)
-    Graphics.fillCircle(ballX, ballY, ballRadius + 1, Color.BLACK)
+    // Update position
+    x = x + dx
+    y = y + dy
 
-    // Update ball position
-    ballX += ballVX
-    ballY += ballVY
-
-    // Bounce off walls
-    if (ballX <= ballRadius || ballX >= 160 - ballRadius) {
-        ballVX = -ballVX
-        ballX += ballVX
+    // Bounce
+    if (x < 10 || x > 150) {
+        dx = -dx
     }
-    if (ballY <= ballRadius || ballY >= 128 - ballRadius) {
-        ballVY = -ballVY
-        ballY += ballVY
+    if (y < 10 || y > 118) {
+        dy = -dy
     }
 
-    // Draw ball at new position
-    Graphics.fillCircle(ballX, ballY, ballRadius, Color.RED)
-
-    // Draw FPS counter
-    Graphics.fillRect(0, 0, 50, 14, Color.BLACK)
-    Graphics.drawText("FPS:" + Graphics.currentFPS(), 2, 2, Color.WHITE)
+    // Draw new position
+    Graphics.fillRect(x - 10, y - 10, 20, 20, Color.RED)
 
     // Update display
-    Graphics.display()
+    Graphics.displayFull()
 
-    Graphics.endFrame()
+    // Small delay
+    basic.pause(30)
 })

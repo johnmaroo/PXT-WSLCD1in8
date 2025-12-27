@@ -238,6 +238,16 @@ namespace LCD {
         pins.digitalWritePin(LCDPins.LCD_CS, 1)
     }
 
+    // Pre-allocated transfer buffer (saves memory vs creating each frame)
+    let _transferBuffer: Buffer = null
+
+    function getTransferBuffer(): Buffer {
+        if (!_transferBuffer) {
+            _transferBuffer = Buffer.create(640)
+        }
+        return _transferBuffer
+    }
+
     /**
      * Transfer entire frame buffer from SRAM to LCD
      * This is the main display update function
@@ -251,12 +261,8 @@ namespace LCD {
         // Set window to full screen
         setWindow(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1)
 
-        // Buffer for 2 rows (640 bytes = 320 pixels)
+        const buffer = getTransferBuffer()
         const chunkSize = 640
-        let buffer: number[] = []
-        for (let i = 0; i < chunkSize; i++) {
-            buffer.push(0)
-        }
 
         // Transfer in chunks of 2 rows (64 chunks for 128 rows)
         for (let chunk = 0; chunk < 64; chunk++) {
@@ -289,6 +295,17 @@ namespace LCD {
         }
     }
 
+    // Pre-allocated row buffer for partial updates
+    let _rowBuffer: Buffer = null
+
+    function getRowBuffer(size: number): Buffer {
+        // Reuse existing buffer if big enough, otherwise create new one
+        if (!_rowBuffer || _rowBuffer.length < size) {
+            _rowBuffer = Buffer.create(Math.min(size, 320))  // Max 1 row
+        }
+        return _rowBuffer
+    }
+
     /**
      * Transfer a rectangular region from SRAM to LCD
      * For simplicity with shared SPI bus, this uses full screen transfer
@@ -311,12 +328,8 @@ namespace LCD {
         // Set LCD window for the region
         setWindow(x, y, x + w - 1, y + h - 1)
 
-        // Buffer for one row of the region
         const rowBytes = w * 2
-        let buffer: number[] = []
-        for (let i = 0; i < rowBytes; i++) {
-            buffer.push(0)
-        }
+        const buffer = getRowBuffer(rowBytes)
 
         // Transfer row by row with proper buffering
         for (let row = 0; row < h; row++) {
