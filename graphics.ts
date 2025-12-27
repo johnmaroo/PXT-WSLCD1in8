@@ -59,7 +59,7 @@ namespace Graphics {
 
     //% blockId=gfx_clear
     //% block="clear screen with %color"
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Display"
     //% weight=95
     export function clear(color: number): void {
@@ -108,7 +108,7 @@ namespace Graphics {
     //% blockId=gfx_draw_pixel
     //% block="draw pixel at x %x y %y color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Drawing"
     //% weight=70
     export function drawPixel(x: number, y: number, color: number): void {
@@ -125,7 +125,7 @@ namespace Graphics {
     //% blockId=gfx_draw_point
     //% block="draw point at x %x y %y color %color size %size"
     //% x.min=0 x.max=159 y.min=0 y.max=127
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Drawing"
     //% weight=65
     export function drawPoint(x: number, y: number, color: number, size: PixelSize): void {
@@ -145,7 +145,7 @@ namespace Graphics {
     //% blockId=gfx_draw_hline
     //% block="draw horizontal line from x %x y %y length %length color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127 length.min=1 length.max=160
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Drawing"
     //% weight=60
     export function drawHLine(x: number, y: number, length: number, color: number): void {
@@ -161,7 +161,7 @@ namespace Graphics {
     //% blockId=gfx_draw_vline
     //% block="draw vertical line from x %x y %y length %length color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127 length.min=1 length.max=128
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Drawing"
     //% weight=55
     export function drawVLine(x: number, y: number, length: number, color: number): void {
@@ -182,7 +182,7 @@ namespace Graphics {
     //% block="draw line from x1 %x1 y1 %y1 to x2 %x2 y2 %y2 color %color || thickness %thickness style %style"
     //% x1.min=0 x1.max=159 y1.min=0 y1.max=127
     //% x2.min=0 x2.max=159 y2.min=0 y2.max=127
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% thickness.defl=1
     //% style.defl=0
     //% expandableArgumentMode="toggle"
@@ -274,7 +274,7 @@ namespace Graphics {
     //% block="draw rectangle x %x y %y width %w height %h color %color || fill %fill thickness %thickness"
     //% x.min=0 x.max=159 y.min=0 y.max=127
     //% w.min=1 w.max=160 h.min=1 h.max=128
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% fill.defl=0
     //% thickness.defl=1
     //% expandableArgumentMode="toggle"
@@ -304,7 +304,7 @@ namespace Graphics {
     //% block="fill rectangle x %x y %y width %w height %h color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127
     //% w.min=1 w.max=160 h.min=1 h.max=128
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Shapes"
     //% weight=44
     export function fillRect(x: number, y: number, w: number, h: number, color: number): void {
@@ -315,7 +315,7 @@ namespace Graphics {
     //% block="draw circle at x %cx y %cy radius %r color %color || fill %fill"
     //% cx.min=0 cx.max=159 cy.min=0 cy.max=127
     //% r.min=1 r.max=64
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% fill.defl=0
     //% expandableArgumentMode="toggle"
     //% group="Shapes"
@@ -371,7 +371,7 @@ namespace Graphics {
     //% block="fill circle at x %cx y %cy radius %r color %color"
     //% cx.min=0 cx.max=159 cy.min=0 cy.max=127
     //% r.min=1 r.max=64
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Shapes"
     //% weight=39
     export function fillCircle(cx: number, cy: number, r: number, color: number): void {
@@ -419,7 +419,7 @@ namespace Graphics {
     //% blockId=gfx_draw_text
     //% block="draw text %text at x %x y %y color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Text"
     //% weight=35
     export function drawText(text: string, x: number, y: number, color: number): void {
@@ -453,8 +453,8 @@ namespace Graphics {
     //% blockId=gfx_draw_text_bg
     //% block="draw text %text at x %x y %y color %color background %bgColor"
     //% x.min=0 x.max=159 y.min=0 y.max=127
-    //% color.shadow=colorNumberPicker
-    //% bgColor.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
+    //% bgColor.shadow=gfx_color_picker
     //% group="Text"
     //% weight=34
     export function drawTextWithBackground(text: string, x: number, y: number, color: number, bgColor: number): void {
@@ -485,11 +485,234 @@ namespace Graphics {
     //% blockId=gfx_draw_number
     //% block="draw number %num at x %x y %y color %color"
     //% x.min=0 x.max=159 y.min=0 y.max=127
-    //% color.shadow=colorNumberPicker
+    //% color.shadow=gfx_color_picker
     //% group="Text"
     //% weight=33
     export function drawNumber(num: number, x: number, y: number, color: number): void {
         drawText(num.toString(), x, y, color)
     }
+
+    // ==================== COLOR PICKER ====================
+
+    /**
+     * Pick an RGB565 color
+     */
+    //% blockId=gfx_color_picker
+    //% block="%color"
+    //% color.shadow="colorWheelPicker"
+    //% blockHidden=true
+    //% shim=TD_ID
+    export function __colorPicker(color: number): number {
+        // Convert from 24-bit to RGB565
+        const r = (color >> 16) & 0xFF
+        const g = (color >> 8) & 0xFF
+        const b = color & 0xFF
+        return rgb(r, g, b)
+    }
+
+    /**
+     * Get a preset color
+     */
+    //% blockId=gfx_preset_color
+    //% block="%c"
+    //% group="Drawing"
+    //% weight=29
+    export function presetColor(c: Color): number {
+        return c
+    }
+
+    // ==================== ANIMATION & PERFORMANCE ====================
+
+    let frameStartTime = 0
+    let lastFrameTime = 0
+    let targetFps = 30
+
+    /**
+     * Set target frame rate for animations
+     */
+    //% blockId=gfx_set_fps
+    //% block="set target FPS to %fps"
+    //% fps.min=1 fps.max=60 fps.defl=30
+    //% group="Animation"
+    //% weight=28
+    export function setTargetFPS(fps: number): void {
+        targetFps = Math.clamp(1, 60, fps)
+    }
+
+    /**
+     * Start timing a new frame (call at beginning of game loop)
+     */
+    //% blockId=gfx_frame_start
+    //% block="begin frame"
+    //% group="Animation"
+    //% weight=27
+    export function beginFrame(): void {
+        frameStartTime = control.millis()
+    }
+
+    /**
+     * End frame and wait to maintain target FPS
+     */
+    //% blockId=gfx_frame_end
+    //% block="end frame"
+    //% group="Animation"
+    //% weight=26
+    export function endFrame(): void {
+        const frameTime = control.millis() - frameStartTime
+        const targetFrameTime = 1000 / targetFps
+        const waitTime = targetFrameTime - frameTime
+
+        if (waitTime > 0) {
+            basic.pause(waitTime)
+        }
+
+        lastFrameTime = control.millis() - frameStartTime
+    }
+
+    /**
+     * Get the actual FPS from last frame
+     */
+    //% blockId=gfx_get_fps
+    //% block="current FPS"
+    //% group="Animation"
+    //% weight=25
+    export function currentFPS(): number {
+        if (lastFrameTime <= 0) return targetFps
+        return Math.round(1000 / lastFrameTime)
+    }
+
+    /**
+     * Get milliseconds since last beginFrame
+     */
+    //% blockId=gfx_frame_time
+    //% block="frame time ms"
+    //% group="Animation"
+    //% weight=24
+    export function frameTime(): number {
+        return control.millis() - frameStartTime
+    }
+
+    /**
+     * Draw a sprite (small image) from a buffer
+     * Buffer format: width, height, then pixel data (RGB565 high/low bytes)
+     */
+    //% blockId=gfx_draw_sprite
+    //% block="draw sprite %data at x %x y %y"
+    //% group="Animation"
+    //% weight=23
+    //% advanced=true
+    export function drawSprite(data: Buffer, x: number, y: number): void {
+        if (data.length < 2) return
+
+        const w = data[0]
+        const h = data[1]
+        const pixelStart = 2
+
+        for (let py = 0; py < h; py++) {
+            for (let px = 0; px < w; px++) {
+                const idx = pixelStart + (py * w + px) * 2
+                if (idx + 1 >= data.length) return
+
+                const color = (data[idx] << 8) | data[idx + 1]
+                // Skip transparent (magenta 0xF81F)
+                if (color !== 0xF81F) {
+                    const screenX = x + px
+                    const screenY = y + py
+                    if (screenX >= 0 && screenX < LCD_WIDTH && screenY >= 0 && screenY < LCD_HEIGHT) {
+                        const addr = SRAM.getPixelAddr(screenX, screenY)
+                        SRAM.writeColor(addr, color)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Create a solid color sprite buffer
+     */
+    //% blockId=gfx_create_sprite
+    //% block="create sprite width %w height %h color %color"
+    //% w.min=1 w.max=32 h.min=1 h.max=32
+    //% color.shadow=gfx_color_picker
+    //% group="Animation"
+    //% weight=22
+    //% advanced=true
+    export function createSprite(w: number, h: number, color: number): Buffer {
+        const size = 2 + w * h * 2
+        const buf = Buffer.create(size)
+        buf[0] = w
+        buf[1] = h
+
+        const highByte = (color >> 8) & 0xFF
+        const lowByte = color & 0xFF
+
+        for (let i = 0; i < w * h; i++) {
+            buf[2 + i * 2] = highByte
+            buf[2 + i * 2 + 1] = lowByte
+        }
+
+        return buf
+    }
+
+    /**
+     * Scroll the entire screen in a direction
+     */
+    //% blockId=gfx_scroll
+    //% block="scroll screen %dir by %pixels pixels fill %fillColor"
+    //% pixels.min=1 pixels.max=128
+    //% fillColor.shadow=gfx_color_picker
+    //% group="Animation"
+    //% weight=21
+    export function scroll(dir: ScrollDirection, pixels: number, fillColor: number): void {
+        // This is a software scroll - reads from SRAM and rewrites shifted
+        // For simplicity, we just clear and let user redraw
+        // A full implementation would copy SRAM regions
+
+        if (dir === ScrollDirection.UP) {
+            // Shift everything up, fill bottom
+            for (let y = 0; y < LCD_HEIGHT - pixels; y++) {
+                for (let x = 0; x < LCD_WIDTH; x++) {
+                    const srcAddr = SRAM.getPixelAddr(x, y + pixels)
+                    const dstAddr = SRAM.getPixelAddr(x, y)
+                    // Read and write (inefficient but works)
+                    const highByte = SRAM.readByte(srcAddr)
+                    const lowByte = SRAM.readByte(srcAddr + 1)
+                    SRAM.writeByte(dstAddr, highByte)
+                    SRAM.writeByte(dstAddr + 1, lowByte)
+                }
+            }
+            // Fill bottom
+            SRAM.fillRect(0, LCD_HEIGHT - pixels, LCD_WIDTH, pixels, fillColor)
+        }
+        // Add other directions as needed
+    }
+
+    /**
+     * Fast fill a region (optimized for speed)
+     */
+    //% blockId=gfx_fast_fill
+    //% block="fast fill x %x y %y width %w height %h color %color"
+    //% x.min=0 x.max=159 y.min=0 y.max=127
+    //% w.min=1 w.max=160 h.min=1 h.max=128
+    //% color.shadow=gfx_color_picker
+    //% group="Animation"
+    //% weight=20
+    export function fastFill(x: number, y: number, w: number, h: number, color: number): void {
+        SRAM.fillRect(x, y, w, h, color)
+    }
+}
+
+/**
+ * Scroll direction for screen scrolling
+ */
+enum ScrollDirection {
+    //% block="up"
+    UP = 0,
+    //% block="down"
+    DOWN = 1,
+    //% block="left"
+    LEFT = 2,
+    //% block="right"
+    RIGHT = 3
 }
 
