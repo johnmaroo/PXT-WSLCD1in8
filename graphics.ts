@@ -183,12 +183,12 @@ namespace Graphics {
     //% x1.min=0 x1.max=159 y1.min=0 y1.max=127
     //% x2.min=0 x2.max=159 y2.min=0 y2.max=127
     //% color.shadow=colorNumberPicker
-    //% thickness.defl=PixelSize.SIZE_1
-    //% style.defl=LineStyle.SOLID
+    //% thickness.defl=1
+    //% style.defl=0
     //% expandableArgumentMode="toggle"
     //% group="Shapes"
     //% weight=50
-    export function drawLine(x1: number, y1: number, x2: number, y2: number, color: number, thickness: PixelSize = PixelSize.SIZE_1, style: LineStyle = LineStyle.SOLID): void {
+    export function drawLine(x1: number, y1: number, x2: number, y2: number, color: number, thickness: PixelSize = 1, style: LineStyle = 0): void {
         // Optimize for horizontal and vertical lines
         if (y1 === y2) {
             const startX = Math.min(x1, x2)
@@ -275,12 +275,12 @@ namespace Graphics {
     //% x.min=0 x.max=159 y.min=0 y.max=127
     //% w.min=1 w.max=160 h.min=1 h.max=128
     //% color.shadow=colorNumberPicker
-    //% fill.defl=FillMode.OUTLINE
-    //% thickness.defl=PixelSize.SIZE_1
+    //% fill.defl=0
+    //% thickness.defl=1
     //% expandableArgumentMode="toggle"
     //% group="Shapes"
     //% weight=45
-    export function drawRect(x: number, y: number, w: number, h: number, color: number, fill: FillMode = FillMode.OUTLINE, thickness: PixelSize = PixelSize.SIZE_1): void {
+    export function drawRect(x: number, y: number, w: number, h: number, color: number, fill: FillMode = 0, thickness: PixelSize = 1): void {
         const x1 = clampX(x)
         const y1 = clampY(y)
         const x2 = clampX(x + w - 1)
@@ -316,11 +316,11 @@ namespace Graphics {
     //% cx.min=0 cx.max=159 cy.min=0 cy.max=127
     //% r.min=1 r.max=64
     //% color.shadow=colorNumberPicker
-    //% fill.defl=FillMode.OUTLINE
+    //% fill.defl=0
     //% expandableArgumentMode="toggle"
     //% group="Shapes"
     //% weight=40
-    export function drawCircle(cx: number, cy: number, r: number, color: number, fill: FillMode = FillMode.OUTLINE): void {
+    export function drawCircle(cx: number, cy: number, r: number, color: number, fill: FillMode = 0): void {
         // Midpoint circle algorithm
         let x = 0
         let y = r

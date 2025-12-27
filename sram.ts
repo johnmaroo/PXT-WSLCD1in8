@@ -10,7 +10,7 @@
 
 //% weight=10
 namespace SRAM {
-    let currentMode = SRAMMode.BYTE
+    let currentMode = -1  // -1 means not initialized
     let initialized = false
 
     /**
@@ -18,6 +18,9 @@ namespace SRAM {
      */
     export function init(): void {
         pins.digitalWritePin(LCDPins.SRAM_CS, 1)
+        control.waitMicros(100)
+        // Force set mode by resetting currentMode
+        currentMode = -1
         setMode(SRAMMode.BYTE)
         initialized = true
     }
@@ -32,6 +35,7 @@ namespace SRAM {
         pins.spiWrite(SRAMCommands.WRSR)
         pins.spiWrite(mode)
         pins.digitalWritePin(LCDPins.SRAM_CS, 1)
+        control.waitMicros(10)
         currentMode = mode
     }
 
@@ -142,12 +146,23 @@ namespace SRAM {
         const lowByte = color & 0xFF
         const totalPixels = LCD_WIDTH * LCD_HEIGHT
 
-        beginStreamWrite(0)
+        // Ensure we're in stream mode
+        setMode(SRAMMode.STREAM)
+        
+        // Begin write at address 0
+        pins.digitalWritePin(LCDPins.SRAM_CS, 0)
+        pins.spiWrite(SRAMCommands.WRITE)
+        pins.spiWrite(0)  // Address high byte
+        pins.spiWrite(0)  // Address middle byte  
+        pins.spiWrite(0)  // Address low byte
+        
+        // Write all pixels
         for (let i = 0; i < totalPixels; i++) {
             pins.spiWrite(highByte)
             pins.spiWrite(lowByte)
         }
-        endStream()
+        
+        pins.digitalWritePin(LCDPins.SRAM_CS, 1)
     }
 
     /**

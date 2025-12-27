@@ -68,11 +68,6 @@ namespace LCD {
      * Initialize the ST7735R LCD controller
      */
     export function init(): void {
-        // Configure SPI
-        pins.spiPins(LCDPins.MOSI, LCDPins.MISO, LCDPins.SCK)
-        pins.spiFormat(8, 0)
-        pins.spiFrequency(18000000)  // 18 MHz
-
         // Set initial pin states
         pins.digitalWritePin(LCDPins.LCD_CS, 1)
         pins.digitalWritePin(LCDPins.LCD_DC, 1)
@@ -246,30 +241,47 @@ namespace LCD {
     /**
      * Transfer entire frame buffer from SRAM to LCD
      * This is the main display update function
+     * 
+     * IMPORTANT: SRAM and LCD share SPI bus, so we must:
+     * 1. Read from SRAM into buffer
+     * 2. Write buffer to LCD
+     * We do this in chunks of 640 bytes (2 rows) like original code
      */
     export function transferFromSRAM(): void {
         // Set window to full screen
         setWindow(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1)
 
-        // Read from SRAM and write to LCD in chunks
-        // Using 320 bytes per chunk (160 pixels = 1 row)
-        const bytesPerRow = LCD_WIDTH * 2
-
-        // Begin SRAM read at address 0
-        SRAM.beginStreamRead(0)
-
-        // Begin LCD write
-        beginPixelWrite()
-
-        // Transfer all pixels
-        const totalBytes = LCD_WIDTH * LCD_HEIGHT * 2
-        for (let i = 0; i < totalBytes; i++) {
-            pins.spiWrite(SRAM.streamReadByte())
+        // Buffer for 2 rows (640 bytes = 320 pixels)
+        const chunkSize = 640
+        let buffer: number[] = []
+        for (let i = 0; i < chunkSize; i++) {
+            buffer.push(0)
         }
 
-        // End transfers
-        endPixelWrite()
-        SRAM.endStream()
+        // Transfer in chunks of 2 rows (64 chunks for 128 rows)
+        for (let chunk = 0; chunk < 64; chunk++) {
+            const sramAddr = chunk * chunkSize
+
+            // Step 1: Read from SRAM into buffer
+            SRAM.setMode(SRAMMode.STREAM)
+            pins.digitalWritePin(LCDPins.SRAM_CS, 0)
+            pins.spiWrite(SRAMCommands.READ)
+            pins.spiWrite(0)
+            pins.spiWrite((sramAddr >> 8) & 0xFF)
+            pins.spiWrite(sramAddr & 0xFF)
+            for (let i = 0; i < chunkSize; i++) {
+                buffer[i] = pins.spiWrite(0x00)
+            }
+            pins.digitalWritePin(LCDPins.SRAM_CS, 1)
+
+            // Step 2: Write buffer to LCD
+            pins.digitalWritePin(LCDPins.LCD_DC, 1)
+            pins.digitalWritePin(LCDPins.LCD_CS, 0)
+            for (let i = 0; i < chunkSize; i++) {
+                pins.spiWrite(buffer[i])
+            }
+            pins.digitalWritePin(LCDPins.LCD_CS, 1)
+        }
 
         // Ensure display is on
         if (!displayOn) {
@@ -279,7 +291,8 @@ namespace LCD {
 
     /**
      * Transfer a rectangular region from SRAM to LCD
-     * Optimized for partial screen updates
+     * For simplicity with shared SPI bus, this uses full screen transfer
+     * when region is large, or row-by-row buffered transfer for small regions
      */
     export function transferRegion(x: number, y: number, w: number, h: number): void {
         // Clamp to screen bounds
@@ -289,23 +302,46 @@ namespace LCD {
         if (y + h > LCD_HEIGHT) h = LCD_HEIGHT - y
         if (w <= 0 || h <= 0) return
 
-        // Set LCD window
-        setWindow(x, y, x + w - 1, y + h - 1)
-        beginPixelWrite()
-
-        // Transfer row by row
-        for (let row = 0; row < h; row++) {
-            const sramAddr = ((y + row) * LCD_WIDTH + x) * 2
-            SRAM.beginStreamRead(sramAddr)
-
-            for (let col = 0; col < w * 2; col++) {
-                pins.spiWrite(SRAM.streamReadByte())
-            }
-
-            SRAM.endStream()
+        // For large regions or full width, use full transfer (more efficient)
+        if (w >= LCD_WIDTH - 20 || (w * h) > 5000) {
+            transferFromSRAM()
+            return
         }
 
-        endPixelWrite()
+        // Set LCD window for the region
+        setWindow(x, y, x + w - 1, y + h - 1)
+
+        // Buffer for one row of the region
+        const rowBytes = w * 2
+        let buffer: number[] = []
+        for (let i = 0; i < rowBytes; i++) {
+            buffer.push(0)
+        }
+
+        // Transfer row by row with proper buffering
+        for (let row = 0; row < h; row++) {
+            const sramAddr = ((y + row) * LCD_WIDTH + x) * 2
+
+            // Step 1: Read row from SRAM
+            SRAM.setMode(SRAMMode.STREAM)
+            pins.digitalWritePin(LCDPins.SRAM_CS, 0)
+            pins.spiWrite(SRAMCommands.READ)
+            pins.spiWrite(0)
+            pins.spiWrite((sramAddr >> 8) & 0xFF)
+            pins.spiWrite(sramAddr & 0xFF)
+            for (let i = 0; i < rowBytes; i++) {
+                buffer[i] = pins.spiWrite(0x00)
+            }
+            pins.digitalWritePin(LCDPins.SRAM_CS, 1)
+
+            // Step 2: Write row to LCD
+            pins.digitalWritePin(LCDPins.LCD_DC, 1)
+            pins.digitalWritePin(LCDPins.LCD_CS, 0)
+            for (let i = 0; i < rowBytes; i++) {
+                pins.spiWrite(buffer[i])
+            }
+            pins.digitalWritePin(LCDPins.LCD_CS, 1)
+        }
 
         if (!displayOn) {
             displayON()

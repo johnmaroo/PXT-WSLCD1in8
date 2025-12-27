@@ -112,6 +112,11 @@ namespace SRAMMode {
     export const STREAM = 0x40 // Sequential/Stream mode
 }
 
+// Configure SPI at startup (must be done before any SPI operations)
+pins.spiPins(DigitalPin.P15, DigitalPin.P14, DigitalPin.P13)
+pins.spiFormat(8, 0)
+pins.spiFrequency(18000000)
+
 // ST7735R command definitions
 namespace ST7735 {
     export const NOP = 0x00
