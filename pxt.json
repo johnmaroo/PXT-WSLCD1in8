@@ -1,17 +1,16 @@
 {
-    "name": "waveshare-lcd1in8",
+    "name": "pxt-wslcd1in8",
     "version": "3.0.0",
-    "description": "Optimized driver for Waveshare 1.8\" LCD (160x128) for micro:bit v2",
+    "description": "Driver for Waveshare 1.8 inch LCD for micro:bit v2",
     "dependencies": {
         "core": "*"
     },
     "files": [
-        "README.md",
         "types.ts",
         "sram.ts",
         "lcd.ts",
-        "graphics.ts",
         "font.ts",
+        "graphics.ts",
         "main.ts"
     ],
     "testFiles": [
@@ -20,7 +19,5 @@
     "supportedTargets": [
         "microbit"
     ],
-    "public": true,
-    "license": "MIT",
-    "preferredEditor": "blocksprj"
+    "public": true
 }
